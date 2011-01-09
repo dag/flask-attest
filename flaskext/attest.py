@@ -12,6 +12,9 @@ class ComparableResponse(Response):
         return all(getattr(self, name) == getattr(other, name)
                    for name in ('status_code', 'headers', 'data'))
 
+    def __ne__(self, other):
+        return not self == other
+
 
 class AppTests(Tests):
 

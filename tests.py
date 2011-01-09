@@ -34,6 +34,7 @@ def setup_db():
 @get('/')
 def index_data(response):
     Assert(response) == Response('Hello, World!')
+    Assert(response) != Response('Hello, World!', status=404)
 
 
 if __name__ == '__main__':
