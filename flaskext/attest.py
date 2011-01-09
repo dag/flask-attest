@@ -24,8 +24,9 @@ class AppTests(Tests):
         @self.context
         def request_context():
             app = appfactory()
-            app.response_class = ComparableResponse
+            app.response_class, orig = ComparableResponse, app.response_class
             client = app.test_client()
+            app.response_class = orig
             yield client
 
 
