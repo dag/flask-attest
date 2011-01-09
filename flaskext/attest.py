@@ -29,11 +29,27 @@ class AppTests(Tests):
             yield client
 
 
-def get(*args, **kwargs):
+def open(*args, **kwargs):
     def decorator(func):
         @wraps(func)
         def wrapper(client):
-            response = client.get(*args, **kwargs)
+            response = client.open(*args, **kwargs)
             return func(response)
         return wrapper
     return decorator
+
+
+def get(*args, **kwargs):
+    return open(*args, method='GET', **kwargs)
+
+def post(*args, **kwargs):
+    return open(*args, method='POST', **kwargs)
+
+def head(*args, **kwargs):
+    return open(*args, method='HEAD', **kwargs)
+
+def put(*args, **kwargs):
+    return open(*args, method='PUT', **kwargs)
+
+def delete(*args, **kwargs):
+    return open(*args, method='DELETE', **kwargs)

@@ -1,5 +1,5 @@
-from flask import Module, Flask, Response
-from flaskext.attest import AppTests, get
+from flask import Module, request, Flask, Response
+from flaskext.attest import AppTests, get, post, delete
 from attest import Assert
 
 TESTING = True
@@ -8,9 +8,16 @@ TESTING = True
 db = {}
 mod = Module(__name__, name='tests')
 
-@mod.route('/')
+@mod.route('/', methods=('GET', 'POST', 'DELETE'))
 def index():
-    return db['index']
+    case = lambda x: request.method == x
+    if case('GET'):
+        return db['index']
+    elif case('POST'):
+        db['index'] = request.form['message']
+    elif case('DELETE'):
+        del db['index']
+    return 'Success!'
 
 
 def create_app():
@@ -22,19 +29,23 @@ def create_app():
 
 app = AppTests(create_app)
 
-@app.context
-def setup_db():
-    db['index'] = 'Hello, World!'
-    try:
-        yield
-    finally:
-        del db['index']
+@app.test
+@post('/', data={'message': 'Hello, World!'})
+def post_to_index(response):
+    Assert(response) == Response('Success!')
+    Assert(db['index']) == 'Hello, World!'
 
 @app.test
 @get('/')
-def index_data(response):
+def get_index(response):
     Assert(response) == Response('Hello, World!')
     Assert(response) != Response('Hello, World!', status=404)
+
+@app.test
+@delete('/')
+def delete_index(response):
+    Assert(response) == Response('Success!')
+    Assert('index').not_in(db)
 
 
 if __name__ == '__main__':
