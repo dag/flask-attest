@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from flask import Response
+from flask.testing import FlaskClient
 from functools import wraps
 from attest import Tests
 
@@ -24,9 +25,7 @@ class AppTests(Tests):
         @self.context
         def request_context():
             app = appfactory()
-            app.response_class, orig = ComparableResponse, app.response_class
-            client = app.test_client()
-            app.response_class = orig
+            client = FlaskClient(app, ComparableResponse)
             yield client
 
 
