@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import with_statement
+from contextlib import contextmanager
 from flask import Response
 from flask.testing import FlaskClient
 from functools import wraps
@@ -24,11 +25,17 @@ class AppTests(Tests):
         Tests.__init__(self, *args, **kwargs)
 
         @self.context
-        def client_context():
+        def request_context():
             app = appfactory()
-            with app.test_request_context():
-                with FlaskClient(app, ComparableResponse) as client:
-                    yield client
+            with app_context(app) as client:
+                yield client
+
+
+@contextmanager
+def app_context(app):
+    with app.test_request_context():
+        with FlaskClient(app, ComparableResponse) as client:
+            yield client
 
 
 def open(*args, **kwargs):
