@@ -1,4 +1,4 @@
-from flask import Module, Flask
+from flask import Module, Flask, Response
 from flaskext.attest import AppTests, get
 from attest import Assert
 
@@ -33,7 +33,7 @@ def setup_db():
 @app.test
 @get('/')
 def index_data(response):
-    Assert(response.data) == 'Hello, World!'
+    Assert(response) == Response('Hello, World!')
 
 
 if __name__ == '__main__':
