@@ -34,7 +34,8 @@ class AppTests(Tests):
 @contextmanager
 def app_context(app):
     with app.test_request_context():
-        with FlaskClient(app, ComparableResponse) as client:
+        cls = getattr(app, 'test_client_class', FlaskClient)
+        with cls(app, ComparableResponse) as client:
             yield client
 
 
