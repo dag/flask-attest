@@ -49,16 +49,21 @@ def open(*args, **kwargs):
 
 
 def get(*args, **kwargs):
-    return open(*args, method='GET', **kwargs)
+    kwargs['method'] = 'GET'
+    return open(*args, **kwargs)
 
 def post(*args, **kwargs):
-    return open(*args, method='POST', **kwargs)
+    kwargs['method'] = 'POST'
+    return open(*args, **kwargs)
 
 def head(*args, **kwargs):
-    return open(*args, method='HEAD', **kwargs)
+    kwargs['method'] = 'HEAD'
+    return open(*args, **kwargs)
 
 def put(*args, **kwargs):
-    return open(*args, method='PUT', **kwargs)
+    kwargs['method'] = 'PUT'
+    return open(*args, **kwargs)
 
 def delete(*args, **kwargs):
-    return open(*args, method='DELETE', **kwargs)
+    kwargs['method'] = 'DELETE'
+    return open(*args, **kwargs)

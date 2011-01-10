@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from flask import Module, request, Flask, Response
 from flaskext.attest import AppTests, get, post, delete
 from attest import Assert
