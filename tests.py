@@ -2,6 +2,7 @@ from flask import Module, request, Flask, Response
 from flaskext.attest import AppTests, get, post, delete
 from attest import Assert
 
+DEBUG = True
 TESTING = True
 
 
@@ -18,6 +19,11 @@ def index():
     elif case('DELETE'):
         del db['index']
     return 'Success!'
+
+@mod.route('/error')
+def error():
+    1/0
+    return 'Oh noes!'
 
 
 def create_app():
@@ -57,6 +63,15 @@ def test_request_context(client):
     Assert(request.path) == '/'
     client.get('/404')
     Assert(request.path) == '/404'
+
+@app.test
+def trigger_error(client):
+    with Assert.raises(ZeroDivisionError):
+        client.get('/error')
+    client.application.debug = False
+    response = client.get('/error')
+    Assert(response.status_code) == 500
+    client.application.debug = True
 
 
 if __name__ == '__main__':
