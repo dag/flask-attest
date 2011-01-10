@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from __future__ import with_statement
 from contextlib import contextmanager
-from flask import Response
+from flask import Response, request
 from flask.testing import FlaskClient
 from functools import wraps
 from attest import Tests
@@ -12,6 +12,7 @@ class ComparableResponse(Response):
     def __eq__(self, other):
         self.freeze()
         other.freeze()
+        other.headers[:] = other.get_wsgi_headers(request.environ)
         return all(getattr(self, name) == getattr(other, name)
                    for name in ('status_code', 'headers', 'data'))
 

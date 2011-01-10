@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from flask import Module, request, Flask, Response
+from flask import Module, request, redirect, Flask, Response
 from flaskext.attest import AppTests, get, post, delete
 from attest import Assert
 
@@ -25,6 +25,10 @@ def index():
 def error():
     1/0
     return 'Oh noes!'
+
+@mod.route('/elsewhere')
+def elsewhere():
+    return redirect('/otherplace')
 
 
 def create_app():
@@ -73,6 +77,12 @@ def trigger_error(client):
     response = client.get('/error')
     Assert(response.status_code) == 500
     client.application.debug = True
+
+@app.test
+@get('/elsewhere')
+def redirection(response):
+    Assert(response) == redirect('/otherplace')
+    Assert(response) != redirect('/wrongplace')
 
 
 if __name__ == '__main__':
