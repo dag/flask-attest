@@ -11,7 +11,6 @@ setup(
         'Flask>=0.6',
         'Attest>=0.4',
         'blinker>=1.1',
-        #'lxml>=2.0',
     ],
 
     zip_safe=False,
