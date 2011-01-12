@@ -2,6 +2,7 @@ from __future__ import with_statement
 from flask import (Module, request, redirect, Flask, Response, jsonify,
                    render_template_string)
 from flaskext.attest import AppTests, get, post, put, delete
+from flaskext.genshi import Genshi, generate_template
 from attest import Assert
 
 DEBUG = True
@@ -44,6 +45,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(__name__)
     app.register_module(mod)
+    Genshi(app)
     return app
 
 
@@ -114,6 +116,14 @@ def json_response(response, templates):
 @get('/hello/world')
 def capture_templates(response, templates):
     Assert(response) == Response('Hello World!')
+    Assert(len(templates)) == 1
+    Assert(templates[0][0]).is_(None)
+    Assert(templates[0][1]['name']) == 'world'
+
+@app.test
+def genshi_templates(client, templates):
+    generate_template(string='Hello ${name.capitalize}!', method='text',
+                      context=dict(name='world'))
     Assert(len(templates)) == 1
     Assert(templates[0][0]).is_(None)
     Assert(templates[0][1]['name']) == 'world'

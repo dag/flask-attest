@@ -41,6 +41,16 @@ class AppTests(Tests):
                 template_rendered.send(self, template=template.name,
                                        context=context)
 
+            try:
+                from flaskext.genshi import template_generated
+            except ImportError:
+                pass
+            else:
+                @template_generated.connect_via(app)
+                def signal_genshi(sender, template, context):
+                    template_rendered.send(self, template=template.filename,
+                                           context=context)
+
             with app_context(app) as client:
                 yield client
 
