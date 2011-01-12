@@ -1,10 +1,15 @@
 from __future__ import absolute_import
 from __future__ import with_statement
 from contextlib import contextmanager
-from flask import Response, request
+from flask import (Response, request, template_rendered as jinja_rendered)
+from flask.signals import Namespace
 from flask.testing import FlaskClient
 from functools import wraps
 from attest import Tests
+
+
+signals = Namespace()
+template_rendered = signals.signal('template-rendered')
 
 
 class ComparableResponse(Response):
@@ -22,14 +27,35 @@ class ComparableResponse(Response):
 
 class AppTests(Tests):
 
+    capture_templates = False
+
     def __init__(self, appfactory, *args, **kwargs):
         Tests.__init__(self, *args, **kwargs)
 
         @self.context
         def request_context():
             app = appfactory()
+
+            @jinja_rendered.connect_via(app)
+            def signal_jinja(sender, template, context):
+                template_rendered.send(self, template=template.name,
+                                       context=context)
+
             with app_context(app) as client:
                 yield client
+
+        @self.context
+        def capture_templates():
+            templates = []
+
+            if self.capture_templates:
+                def capture(sender, template, context):
+                    templates.append((template, context))
+
+                with template_rendered.connected_to(capture):
+                    yield templates
+            else:
+                yield
 
 
 @contextmanager
@@ -43,9 +69,9 @@ def app_context(app):
 def open(*args, **kwargs):
     def decorator(func):
         @wraps(func)
-        def wrapper(client):
+        def wrapper(client, *wrapperargs, **wrapperkwargs):
             response = client.open(*args, **kwargs)
-            return func(response)
+            return func(response, *wrapperargs, **wrapperkwargs)
         return wrapper
     return decorator
 

@@ -1,5 +1,6 @@
 from __future__ import with_statement
-from flask import Module, request, redirect, Flask, Response, jsonify
+from flask import (Module, request, redirect, Flask, Response, jsonify,
+                   render_template_string)
 from flaskext.attest import AppTests, get, post, put, delete
 from attest import Assert
 
@@ -34,6 +35,10 @@ def elsewhere():
 def json():
     return jsonify(status='Success!')
 
+@mod.route('/hello/<name>')
+def hello(name):
+    return render_template_string('Hello {{name.capitalize()}}!', name=name)
+
 
 def create_app():
     app = Flask(__name__)
@@ -43,48 +48,49 @@ def create_app():
 
 
 app = AppTests(create_app)
+app.capture_templates = True
 
 @app.test
 @post('/', data={'message': 'Hello, World!'})
-def post_to_index(response):
+def post_to_index(response, templates):
     Assert(request.method) == 'POST'
     Assert(response) == Response('Success!')
     Assert(db['index']) == 'Hello, World!'
 
 @app.test
 @put('/', data={'message': 'Hello, World!'})
-def put_to_index(response):
+def put_to_index(response, templates):
     Assert(request.method) == 'PUT'
     Assert(response) == Response('Success!')
     Assert(db['index']) == 'Hello, World!'
 
 @app.test
 @get('/')
-def get_index(response):
+def get_index(response, templates):
     Assert(request.method) == 'GET'
     Assert(response) == Response('Hello, World!')
     Assert(response) != Response('Hello, World!', status=404)
 
 @app.test
 @delete('/')
-def delete_index(response):
+def delete_index(response, templates):
     Assert(request.method) == 'DELETE'
     Assert(response) == Response('Success!')
     Assert('index').not_in(db)
 
 @app.test
 @get('/404')
-def request_persists(response):
+def request_persists(response, templates):
     Assert(request.path) == '/404'
 
 @app.test
-def test_request_context(client):
+def test_request_context(client, templates):
     Assert(request.path) == '/'
     client.get('/404')
     Assert(request.path) == '/404'
 
 @app.test
-def trigger_error(client):
+def trigger_error(client, templates):
     with Assert.raises(ZeroDivisionError):
         client.get('/error')
     client.application.debug = False
@@ -94,15 +100,23 @@ def trigger_error(client):
 
 @app.test
 @get('/elsewhere')
-def redirection(response):
+def redirection(response, templates):
     Assert(response) == redirect('/otherplace')
     Assert(response) != redirect('/wrongplace')
 
 @app.test
 @get('/json')
-def json_response(response):
+def json_response(response, templates):
     Assert(response) == jsonify(status='Success!')
     Assert(response.data).json == {'status': 'Success!'}
+
+@app.test
+@get('/hello/world')
+def capture_templates(response, templates):
+    Assert(response) == Response('Hello World!')
+    Assert(len(templates)) == 1
+    Assert(templates[0][0]).is_(None)
+    Assert(templates[0][1]['name']) == 'world'
 
 
 if __name__ == '__main__':
