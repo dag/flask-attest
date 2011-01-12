@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from flask import Module, request, redirect, Flask, Response
+from flask import Module, request, redirect, Flask, Response, jsonify
 from flaskext.attest import AppTests, get, post, put, delete
 from attest import Assert
 
@@ -29,6 +29,10 @@ def error():
 @mod.route('/elsewhere')
 def elsewhere():
     return redirect('/otherplace')
+
+@mod.route('/json')
+def json():
+    return jsonify(status='Success!')
 
 
 def create_app():
@@ -93,6 +97,12 @@ def trigger_error(client):
 def redirection(response):
     Assert(response) == redirect('/otherplace')
     Assert(response) != redirect('/wrongplace')
+
+@app.test
+@get('/json')
+def json_response(response):
+    Assert(response) == jsonify(status='Success!')
+    Assert(response.data).json == {'status': 'Success!'}
 
 
 if __name__ == '__main__':
