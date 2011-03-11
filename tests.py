@@ -3,7 +3,7 @@ from flask import (Module, request, redirect, Flask, Response, jsonify,
                    render_template_string)
 from flaskext.attest import AppTests, get, post, put, delete
 from flaskext.genshi import Genshi, generate_template
-from attest import Assert, assert_hook
+from attest import raises, assert_hook
 
 DEBUG = True
 TESTING = True
@@ -93,7 +93,7 @@ def test_request_context(client, templates):
 
 @app.test
 def trigger_error(client, templates):
-    with Assert.raises(ZeroDivisionError):
+    with raises(ZeroDivisionError):
         client.get('/error')
     client.application.debug = False
     response = client.get('/error')
