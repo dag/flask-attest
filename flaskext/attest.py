@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from flask import (Response, request, template_rendered as jinja_rendered)
 from flask.signals import Namespace
 from flask.testing import FlaskClient
-from functools import wraps
+from decorator import decorator
 from attest import Tests
 
 
@@ -77,13 +77,11 @@ def app_context(app):
 
 
 def open(*args, **kwargs):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(client, *wrapperargs, **wrapperkwargs):
-            response = client.open(*args, **kwargs)
-            return func(response, *wrapperargs, **wrapperkwargs)
-        return wrapper
-    return decorator
+    @decorator
+    def wrapper(func, client, *wrapperargs, **wrapperkwargs):
+        response = client.open(*args, **kwargs)
+        return func(response, *wrapperargs, **wrapperkwargs)
+    return wrapper
 
 
 def get(*args, **kwargs):

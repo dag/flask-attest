@@ -3,7 +3,7 @@ from flask import (Module, request, redirect, Flask, Response, jsonify,
                    render_template_string)
 from flaskext.attest import AppTests, get, post, put, delete
 from flaskext.genshi import Genshi, generate_template
-from attest import Assert
+from attest import Assert, assert_hook
 
 DEBUG = True
 TESTING = True
@@ -55,41 +55,41 @@ app.capture_templates = True
 @app.test
 @post('/', data={'message': 'Hello, World!'})
 def post_to_index(response, templates):
-    Assert(request.method) == 'POST'
-    Assert(response) == Response('Success!')
-    Assert(db['index']) == 'Hello, World!'
+    assert (request.method) == 'POST'
+    assert (response) == Response('Success!')
+    assert (db['index']) == 'Hello, World!'
 
 @app.test
 @put('/', data={'message': 'Hello, World!'})
 def put_to_index(response, templates):
-    Assert(request.method) == 'PUT'
-    Assert(response) == Response('Success!')
-    Assert(db['index']) == 'Hello, World!'
+    assert (request.method) == 'PUT'
+    assert (response) == Response('Success!')
+    assert (db['index']) == 'Hello, World!'
 
 @app.test
 @get('/')
 def get_index(response, templates):
-    Assert(request.method) == 'GET'
-    Assert(response) == Response('Hello, World!')
-    Assert(response) != Response('Hello, World!', status=404)
+    assert (request.method) == 'GET'
+    assert (response) == Response('Hello, World!')
+    assert (response) != Response('Hello, World!', status=404)
 
 @app.test
 @delete('/')
 def delete_index(response, templates):
-    Assert(request.method) == 'DELETE'
-    Assert(response) == Response('Success!')
-    Assert('index').not_in(db)
+    assert (request.method) == 'DELETE'
+    assert (response) == Response('Success!')
+    assert ('index') not in (db)
 
 @app.test
 @get('/404')
 def request_persists(response, templates):
-    Assert(request.path) == '/404'
+    assert (request.path) == '/404'
 
 @app.test
 def test_request_context(client, templates):
-    Assert(request.path) == '/'
+    assert (request.path) == '/'
     client.get('/404')
-    Assert(request.path) == '/404'
+    assert (request.path) == '/404'
 
 @app.test
 def trigger_error(client, templates):
@@ -97,36 +97,35 @@ def trigger_error(client, templates):
         client.get('/error')
     client.application.debug = False
     response = client.get('/error')
-    Assert(response.status_code) == 500
+    assert (response.status_code) == 500
     client.application.debug = True
 
 @app.test
 @get('/elsewhere')
 def redirection(response, templates):
-    Assert(response) == redirect('/otherplace')
-    Assert(response) != redirect('/wrongplace')
+    assert (response) == redirect('/otherplace')
+    assert (response) != redirect('/wrongplace')
 
 @app.test
 @get('/json')
 def json_response(response, templates):
-    Assert(response) == jsonify(status='Success!')
-    Assert(response.data).json == {'status': 'Success!'}
+    assert (response) == jsonify(status='Success!')
 
 @app.test
 @get('/hello/world')
 def capture_templates(response, templates):
-    Assert(response) == Response('Hello World!')
-    Assert(len(templates)) == 1
-    Assert(templates[0][0]).is_(None)
-    Assert(templates[0][1]['name']) == 'world'
+    assert (response) == Response('Hello World!')
+    assert (len(templates)) == 1
+    assert (templates[0][0]) is (None)
+    assert (templates[0][1]['name']) == 'world'
 
 @app.test
 def genshi_templates(client, templates):
     generate_template(string='Hello ${name.capitalize}!', method='text',
                       context=dict(name='world'))
-    Assert(len(templates)) == 1
-    Assert(templates[0][0]).is_(None)
-    Assert(templates[0][1]['name']) == 'world'
+    assert (len(templates)) == 1
+    assert (templates[0][0]) is (None)
+    assert (templates[0][1]['name']) == 'world'
 
 
 if __name__ == '__main__':

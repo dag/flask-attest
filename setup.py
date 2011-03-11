@@ -9,8 +9,9 @@ setup(
 
     install_requires=[
         'Flask>=0.6',
-        'Attest>=0.4',
+        'Attest>=0.5',
         'blinker>=1.1',
+        'decorator',
     ],
 
     zip_safe=False,
