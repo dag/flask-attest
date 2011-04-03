@@ -94,6 +94,42 @@ what context.
     :data:`template_rendered` for how to extend the capturing.
 
 
+Customizing Test Contexts
+-------------------------
+
+Attest lets you register multiple contexts so it is easy to do things such
+as setting up database fixtures::
+
+    admin = Tests(contexts=[testapp])
+
+    @admin.context
+    def dbfixtures():
+        data = setup_fixtures()
+        yield data
+        teardown_fixtures()
+
+Tests in this ``admin`` collection would receive three arguments -
+``client``, ``templates`` and ``data``. The arguments are positional so the
+names have no significance, and you only get as many arguments as you ask
+for. If however you only want the last one, you still have to write a
+signature for three arguments. You can work around this by using the
+`testapp` context manually in your own context, and simply ignore what it
+returns::
+
+    admin = Tests()
+
+    @admin.context
+    def dbfixtures():
+        with testapp():
+            data = setup_fixtures()
+            yield data
+            teardown_fixtures()
+
+If you find yourself doing things like this a lot you can always write
+normal context managers and pass references to them to ``Tests()``, like we
+have been doing with `testapp`.
+
+
 API Reference
 -------------
 
