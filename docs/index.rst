@@ -83,3 +83,11 @@ API Reference
 .. autofunction:: head
 
 .. autoclass:: TestResponse
+
+.. data:: template_rendered
+
+    Signal that fills the templates list for tests. Emit this to support
+    templating toolkits other than Jinja and Genshi (via Flask-Genshi).
+    Expects a ``template`` argument that should be the name of the rendered
+    template, and a ``context`` argument that should be the context
+    dictionary the template renders in.
