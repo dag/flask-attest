@@ -7,26 +7,6 @@ from flask.testing import FlaskClient
 from decorator import decorator
 
 
-signals = Namespace()
-template_rendered = signals.signal('template-rendered')
-
-
-class TestResponse(Response):
-    """A :class:`~flask.Response` adapted to testing, this is returned by
-    the test client. The added feature is that it can be compared against
-    other response objects."""
-
-    def __eq__(self, other):
-        self.freeze()
-        other.freeze()
-        other.headers[:] = other.get_wsgi_headers(request.environ)
-        return all(getattr(self, name) == getattr(other, name)
-                   for name in ('status_code', 'headers', 'data'))
-
-    def __ne__(self, other):
-        return not self == other
-
-
 def test_context(appfactory):
     """Decorator that creates a test context out of a function that returns
     a Flask application."""
@@ -111,3 +91,23 @@ def put(*args, **kwargs):
 def delete(*args, **kwargs):
     kwargs['method'] = 'DELETE'
     return open(*args, **kwargs)
+
+
+class TestResponse(Response):
+    """A :class:`~flask.Response` adapted to testing, this is returned by
+    the test client. The added feature is that it can be compared against
+    other response objects."""
+
+    def __eq__(self, other):
+        self.freeze()
+        other.freeze()
+        other.headers[:] = other.get_wsgi_headers(request.environ)
+        return all(getattr(self, name) == getattr(other, name)
+                   for name in ('status_code', 'headers', 'data'))
+
+    def __ne__(self, other):
+        return not self == other
+
+
+signals = Namespace()
+template_rendered = signals.signal('template-rendered')
