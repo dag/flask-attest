@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from flask import (Module, request, redirect, Flask, Response, jsonify,
                    render_template_string)
-from flaskext.attest import test_context, get, post, put, delete
+from flaskext.attest import request_context, get, post, put, delete
 from flaskext.genshi import Genshi, generate_template
 from attest import Tests, raises, assert_hook
 
@@ -41,7 +41,7 @@ def hello(name):
     return render_template_string('Hello {{name.capitalize()}}!', name=name)
 
 
-@test_context
+@request_context
 def testapp():
     app = Flask(__name__)
     app.config.from_object(__name__)

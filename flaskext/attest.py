@@ -7,12 +7,12 @@ from flask.testing import FlaskClient
 from decorator import decorator
 
 
-def test_context(appfactory):
+def request_context(appfactory):
     """Decorator that creates a test context out of a function that returns
     a Flask application."""
 
     @contextmanager
-    def request_context():
+    def test_request_context():
         app = appfactory()
         templates = []
 
@@ -38,7 +38,7 @@ def test_context(appfactory):
             with template_rendered.connected_to(capture):
                 yield client, templates
 
-    return request_context
+    return test_request_context
 
 
 @contextmanager

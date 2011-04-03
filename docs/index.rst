@@ -11,25 +11,25 @@ We first need to set up a context manager that our tests will run in.
 Assuming we have an application factory that takes an argument for
 :meth:`~flask.Config.from_object`, here's a basic setup::
 
-    from flaskext.attest import test_context
+    from flaskext.attest import request_context
     from myapp import create_app
 
     TESTING = True
 
-    @test_context
+    @request_context
     def testapp():
         return create_app(__name__)
 
-The function decorated with :func:`test_context` should simply return a
+The function decorated with :func:`request_context` should simply return a
 Flask application. The decorated function is turned into a context manager
-that creates the application, enters a request context and connects some
-templating signals. The context manager returns a
+that creates the application, enters a test request context and connects
+some templating signals. The context manager returns a
 :meth:`~flask.Flask.test_client` and a list which is mutated every time a
 template is rendered, appending a tuple of the template name and context.
 
 What this means for Attest is we can pass this context manager to test
-collections and those tests will run in a request context and receive two
-arguments, ``client`` and ``templates``::
+collections and those tests will run in a test request context and receive
+two arguments, ``client`` and ``templates``::
 
     import json
     from attest import Tests
@@ -97,7 +97,7 @@ what context.
 API Reference
 -------------
 
-.. autofunction:: test_context
+.. autofunction:: request_context
 
 .. autofunction:: open
 
