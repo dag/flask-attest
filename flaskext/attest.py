@@ -12,6 +12,9 @@ template_rendered = signals.signal('template-rendered')
 
 
 class TestResponse(Response):
+    """A :class:`~flask.Response` adapted to testing, this is returned by
+    the test client. The added feature is that it can be compared against
+    other response objects."""
 
     def __eq__(self, other):
         self.freeze()
@@ -25,6 +28,8 @@ class TestResponse(Response):
 
 
 def test_context(appfactory):
+    """Decorator that creates a test context out of a function that returns
+    a Flask application."""
 
     @contextmanager
     def request_context():
@@ -65,6 +70,9 @@ def app_context(app):
 
 
 def open(*args, **kwargs):
+    """Wraps a test with a call to :meth:`~werkzeug.test.Client.open` on
+    the test client, passing the response instead of the client to the
+    test."""
     @decorator
     def wrapper(func, client, *wrapperargs, **wrapperkwargs):
         response = client.open(*args, **kwargs)
@@ -73,6 +81,18 @@ def open(*args, **kwargs):
 
 
 def get(*args, **kwargs):
+    """Decorates a test to issue a GET request to the application. This is
+    sugar for ``@open(method='GET')``. Arguments are the same as to
+    :class:`~werkzeug.test.EnvironBuilder`.
+
+    Typical usage::
+
+        @frontend.test
+        @get('/')
+        def index(response):
+            assert 'Welcome!' in response.data
+
+    """
     kwargs['method'] = 'GET'
     return open(*args, **kwargs)
 

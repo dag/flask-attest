@@ -1,6 +1,8 @@
 Flask-Attest
 ============
 
+.. module:: flaskext.attest
+
 
 Testing requests
 ----------------
@@ -61,3 +63,15 @@ This use of :func:`~flask.jsonify` works because it returns a response
 object, and as a result we're doing all the same checks as in the first
 version of our test, and possibly more because we're comparing all headers.
 This also works with :func:`~flask.redirect`.
+
+
+API Reference
+-------------
+
+.. autofunction:: test_context
+
+.. autofunction:: open
+
+.. autofunction:: get
+
+.. autoclass:: TestResponse

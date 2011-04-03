@@ -6,6 +6,8 @@ copyright = u'2011, Dag Odenhall'
 version = '0.1'
 release = '0.1'
 
+extensions = ['sphinx.ext.autodoc']
+
 master_doc = 'index'
 
 html_theme_path = ['_themes']
