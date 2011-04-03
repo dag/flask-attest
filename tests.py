@@ -1,9 +1,9 @@
 from __future__ import with_statement
 from flask import (Module, request, redirect, Flask, Response, jsonify,
                    render_template_string)
-from flaskext.attest import AppTests, get, post, put, delete
+from flaskext.attest import test_context, get, post, put, delete
 from flaskext.genshi import Genshi, generate_template
-from attest import raises, assert_hook
+from attest import Tests, raises, assert_hook
 
 DEBUG = True
 TESTING = True
@@ -41,7 +41,8 @@ def hello(name):
     return render_template_string('Hello {{name.capitalize()}}!', name=name)
 
 
-def create_app():
+@test_context
+def testapp():
     app = Flask(__name__)
     app.config.from_object(__name__)
     app.register_module(mod)
@@ -49,8 +50,7 @@ def create_app():
     return app
 
 
-app = AppTests(create_app)
-app.capture_templates = True
+app = Tests(contexts=[testapp])
 
 @app.test
 @post('/', data={'message': 'Hello, World!'})

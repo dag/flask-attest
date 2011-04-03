@@ -5,7 +5,6 @@ from flask import (Response, request, template_rendered as jinja_rendered)
 from flask.signals import Namespace
 from flask.testing import FlaskClient
 from decorator import decorator
-from attest import Tests
 
 
 signals = Namespace()
@@ -25,47 +24,36 @@ class ComparableResponse(Response):
         return not self == other
 
 
-class AppTests(Tests):
+def test_context(appfactory):
 
-    capture_templates = False
+    @contextmanager
+    def request_context():
+        app = appfactory()
+        templates = []
 
-    def __init__(self, appfactory, *args, **kwargs):
-        Tests.__init__(self, *args, **kwargs)
+        def capture(sender, template, context):
+            templates.append((template, context))
 
-        @self.context
-        def request_context():
-            app = appfactory()
+        @jinja_rendered.connect_via(app)
+        def signal_jinja(sender, template, context):
+            template_rendered.send(None, template=template.name,
+                                   context=context)
 
-            @jinja_rendered.connect_via(app)
-            def signal_jinja(sender, template, context):
-                template_rendered.send(self, template=template.name,
+        try:
+            from flaskext.genshi import template_generated
+        except ImportError:
+            pass
+        else:
+            @template_generated.connect_via(app)
+            def signal_genshi(sender, template, context):
+                template_rendered.send(None, template=template.filename,
                                        context=context)
 
-            try:
-                from flaskext.genshi import template_generated
-            except ImportError:
-                pass
-            else:
-                @template_generated.connect_via(app)
-                def signal_genshi(sender, template, context):
-                    template_rendered.send(self, template=template.filename,
-                                           context=context)
+        with app_context(app) as client:
+            with template_rendered.connected_to(capture):
+                yield client, templates
 
-            with app_context(app) as client:
-                yield client
-
-        @self.context
-        def capture_templates():
-            templates = []
-
-            if self.capture_templates:
-                def capture(sender, template, context):
-                    templates.append((template, context))
-
-                with template_rendered.connected_to(capture):
-                    yield templates
-            else:
-                yield
+    return request_context
 
 
 @contextmanager
