@@ -29,7 +29,7 @@ template is rendered, appending a tuple of the template name and context.
 
 What this means for Attest is we can pass this context manager to test
 collections and those tests will run in a test request context and receive
-two arguments, ``client`` and ``templates``::
+two arguments, `client` and `templates`::
 
     import json
     from attest import Tests
@@ -69,7 +69,7 @@ Captured Templates
 ------------------
 
 If anything calls :func:`~flask.render_template` during a test, a tuple is
-appended to the ``templates`` list that is passed to the test. Say we're
+appended to the `templates` list that is passed to the test. Say we're
 testing a view like this one::
 
     @app.route('/')
@@ -108,13 +108,12 @@ as setting up database fixtures::
         yield data
         teardown_fixtures()
 
-Tests in this ``admin`` collection would receive three arguments -
-``client``, ``templates`` and ``data``. The arguments are positional so the
-names have no significance, and you only get as many arguments as you ask
-for. If however you only want the last one, you still have to write a
-signature for three arguments. You can work around this by using the
-`testapp` context manually in your own context, and simply ignore what it
-returns::
+Tests in this `admin` collection would receive three arguments - `client`,
+`templates` and `data`. The arguments are positional so the names have no
+significance, and you only get as many arguments as you ask for. If however
+you only want the last one, you still have to write a signature for three
+arguments. You can work around this by using the `testapp` context manually
+in your own context, and simply ignore what it returns::
 
     admin = Tests()
 
@@ -153,6 +152,6 @@ API Reference
 
     Signal that fills the templates list for tests. Emit this to support
     templating toolkits other than Jinja and Genshi (via Flask-Genshi).
-    Expects a ``template`` argument that should be the name of the rendered
-    template, and a ``context`` argument that should be the context
+    Expects a `template` argument that should be the name of the rendered
+    template, and a `context` argument that should be the context
     dictionary the template renders in.
