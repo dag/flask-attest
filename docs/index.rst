@@ -74,4 +74,12 @@ API Reference
 
 .. autofunction:: get
 
+.. autofunction:: post
+
+.. autofunction:: put
+
+.. autofunction:: delete
+
+.. autofunction:: head
+
 .. autoclass:: TestResponse

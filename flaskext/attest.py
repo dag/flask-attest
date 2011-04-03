@@ -77,19 +77,23 @@ def get(*args, **kwargs):
     return open(*args, **kwargs)
 
 def post(*args, **kwargs):
+    """Issue a POST request, like :func:`get`."""
     kwargs['method'] = 'POST'
     return open(*args, **kwargs)
 
-def head(*args, **kwargs):
-    kwargs['method'] = 'HEAD'
-    return open(*args, **kwargs)
-
 def put(*args, **kwargs):
+    """Issue a PUT request, like :func:`get`."""
     kwargs['method'] = 'PUT'
     return open(*args, **kwargs)
 
 def delete(*args, **kwargs):
+    """Issue a DELETE request, like :func:`get`."""
     kwargs['method'] = 'DELETE'
+    return open(*args, **kwargs)
+
+def head(*args, **kwargs):
+    """Issue a HEAD request, like :func:`get`."""
+    kwargs['method'] = 'HEAD'
     return open(*args, **kwargs)
 
 
