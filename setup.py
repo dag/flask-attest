@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Attest',
-    version='0.1',
+    version='0.1dev',
 
     packages=['flaskext'],
     namespace_packages=['flaskext'],

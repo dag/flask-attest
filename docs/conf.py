@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath('_themes'))
 project = u'Flask-Attest'
 copyright = u'2011, Dag Odenhall'
 version = '0.1'
-release = '0.1'
+release = '0.1dev'
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 intersphinx_mapping = {
