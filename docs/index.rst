@@ -4,7 +4,7 @@ Flask-Attest
 .. module:: flaskext.attest
 
 
-Testing requests
+Testing Requests
 ----------------
 
 We first need to set up a context manager that our tests will run in.
@@ -63,6 +63,35 @@ This use of :func:`~flask.jsonify` works because it returns a response
 object, and as a result we're doing all the same checks as in the first
 version of our test, and possibly more because we're comparing all headers.
 This also works with :func:`~flask.redirect`.
+
+
+Captured Templates
+------------------
+
+If anything calls :func:`~flask.render_template` during a test, a tuple is
+appended to the ``templates`` list that is passed to the test. Say we're
+testing a view like this one::
+
+    @app.route('/')
+    def index():
+        return render_template('index.html', title='Welcome to Awesome Ltd.')
+
+The templates list should be empty until we issue ``client.get('/')``. If
+we're using the :func:`get` decorator it'll already have happened before
+our test code executes. After a request has been issued, the templates list
+should look like this::
+
+    [('index.html', {'title': 'Welcome to Awesome Ltd.'})]
+
+The gist of it all is that you can write checks for how many templates were
+rendered, exactly which templates were rendered and in what order, and with
+what context.
+
+.. note::
+
+    This works out-of-the-box for Flask's built in support for Jinja2, and
+    with the Flask-Genshi extension. For other toolkits, see
+    :data:`template_rendered` for how to extend the capturing.
 
 
 API Reference
