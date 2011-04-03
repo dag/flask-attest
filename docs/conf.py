@@ -18,6 +18,8 @@ master_doc = 'index'
 
 html_theme_path = ['_themes']
 html_theme = 'flask_small'
+html_static_path = ['_static']
 html_theme_options = {
+    'index_logo': 'flask-attest.png',
     'github_fork': 'dag/flask-attest'
 }
