@@ -11,7 +11,7 @@ signals = Namespace()
 template_rendered = signals.signal('template-rendered')
 
 
-class ComparableResponse(Response):
+class TestResponse(Response):
 
     def __eq__(self, other):
         self.freeze()
@@ -60,7 +60,7 @@ def test_context(appfactory):
 def app_context(app):
     with app.test_request_context():
         cls = getattr(app, 'test_client_class', FlaskClient)
-        with cls(app, ComparableResponse) as client:
+        with cls(app, TestResponse) as client:
             yield client
 
 
