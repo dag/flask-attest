@@ -4,6 +4,7 @@ setup(
     name='Flask-Attest',
     version='0.1dev',
     description='Test Flask applications with Attest',
+    long_description=open('README.rst').read(),
     url='https://github.com/dag/flask-attest',
 
     author='Dag Odenhall',
