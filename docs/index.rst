@@ -65,6 +65,55 @@ version of our test, and possibly more because we're comparing all headers.
 This also works with :func:`~flask.redirect`.
 
 
+File Layout for Test Suites
+---------------------------
+
+No particular layout is enforced. A common convention is to put the tests
+in a `tests` package with a master collection in the package top-level.
+
+.. rubric:: tests/__init__.py
+
+::
+
+    from attest import Tests
+    all = Tests(['tests.views.frontend', 'tests.views.admin'])
+
+Then you could have a `contexts` module to hold our ``@request_context``
+and any other context managers we might find useful to reuse.
+
+.. rubric:: tests/contexts.py
+
+::
+
+    from flaskext.attest import request_context
+    from myapp import create_app
+
+    TESTING = True
+
+    @request_context
+    def testapp():
+        return create_app(__name__)
+
+The tests themselves we also put in modules under the tests package. In
+this case we had listed `views` as a package with two test collections.
+
+.. rubric:: tests/views.py
+
+::
+
+    from attest import Tests, assert_hook
+    from .contexts import testapp
+
+    frontend = Tests(contexts=[testapp])
+    admin = Tests(contexts=[testapp])
+
+Now you can run your suite:
+
+.. code-block:: bash
+
+    python -mattest tests.all  # -mattest.run on Python 2.6 and older
+
+
 Captured Templates
 ------------------
 
