@@ -3,6 +3,23 @@ Flask-Attest
 
 .. module:: flaskext.attest
 
+An extension of Flask for automated testing using Attest.
+
+Features:
+
+* Flask-like API
+* Handling of request contexts in tests
+* Captures metadata about rendered templates
+* Flexible library with few assumptions
+* Write test conditions naturally with the :keyword:`assert` statement
+
+Install from PyPI to get started quickly::
+
+    easy_install Flask-Attest
+
+For serious use it's usually better to list it as a test dependency,
+though.
+
 
 Testing Requests
 ----------------

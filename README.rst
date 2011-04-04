@@ -1,7 +1,15 @@
 Flask-Attest
 ============
 
-Test Flask applications with Attest, with an API inspired by Flask.
+An extension of Flask for automated testing using Attest.
+
+Features:
+
+* Flask-like API
+* Handling of request contexts in tests
+* Captures metadata about rendered templates
+* Flexible library with few assumptions
+* Write test conditions naturally with the `assert` statement
 
 ::
 
