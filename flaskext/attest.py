@@ -44,7 +44,7 @@ def request_context(appfactory):
 @contextmanager
 def app_context(app):
     with app.test_request_context():
-        cls = getattr(app, 'test_client_class', FlaskClient)
+        cls = getattr(app, 'test_client_class', None) or FlaskClient
         with cls(app, TestResponse) as client:
             yield client
 
