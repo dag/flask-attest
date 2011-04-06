@@ -35,14 +35,19 @@ Assuming we have an application factory that takes an argument for
 
     @request_context
     def testapp():
-        return create_app(__name__)
+        yield create_app(__name__)
 
-The function decorated with :func:`request_context` should simply return a
-Flask application. The decorated function is turned into a context manager
-that creates the application, enters a test request context and connects
-some templating signals. The context manager returns a
-:meth:`~flask.Flask.test_client` and a list which is mutated every time a
-template is rendered, appending a tuple of the template name and context.
+The :func:`request_context` decorator is similar to
+:func:`~contextlib.contextmanager` and the decorated generator function
+should simply yield a Flask application. If needed you can surround the
+yield with code that should run before and after tests, and that need the
+application instance.
+
+The result is a new context manager that also enters a test request context
+and connects signals for recording any rendering of templates. The context
+manager returns a :meth:`~flask.Flask.test_client` and a list which is
+mutated every time a template is rendered, appending a tuple of the
+template name and context.
 
 What this means for Attest is we can pass this context manager to test
 collections and those tests will run in a test request context and receive
@@ -109,7 +114,7 @@ and any other context managers we might find useful to reuse.
 
     @request_context
     def testapp():
-        return create_app(__name__)
+        yield create_app(__name__)
 
 The tests themselves we also put in modules under the tests package. In
 this case we had listed `views` as a package with two test collections.

@@ -63,7 +63,7 @@ class MiniTwitClient(FlaskClient):
 @request_context
 def testapp():
     minitwit.app.test_client_class = MiniTwitClient
-    return minitwit.app
+    yield minitwit.app
 
 
 app = Tests(contexts=[testapp])

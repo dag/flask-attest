@@ -35,7 +35,7 @@ class FlaskrClient(FlaskClient):
 @request_context
 def testapp():
     flaskr.app.test_client_class = FlaskrClient
-    return flaskr.app
+    yield flaskr.app
 
 
 app = Tests(contexts=[testapp])
