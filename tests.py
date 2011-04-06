@@ -47,7 +47,7 @@ def testapp():
     app.config.from_object(__name__)
     app.register_module(mod)
     Genshi(app)
-    return app
+    yield app
 
 
 app = Tests(contexts=[testapp])

@@ -13,30 +13,30 @@ def request_context(appfactory):
 
     @contextmanager
     def test_request_context():
-        app = appfactory()
-        templates = []
+        with contextmanager(appfactory)() as app:
+            templates = []
 
-        def capture(sender, template, context):
-            templates.append((template, context))
+            def capture(sender, template, context):
+                templates.append((template, context))
 
-        @jinja_rendered.connect_via(app)
-        def signal_jinja(sender, template, context):
-            template_rendered.send(None, template=template.name,
-                                   context=context)
-
-        try:
-            from flaskext.genshi import template_generated
-        except ImportError:
-            pass
-        else:
-            @template_generated.connect_via(app)
-            def signal_genshi(sender, template, context):
-                template_rendered.send(None, template=template.filename,
+            @jinja_rendered.connect_via(app)
+            def signal_jinja(sender, template, context):
+                template_rendered.send(None, template=template.name,
                                        context=context)
 
-        with app_context(app) as client:
-            with template_rendered.connected_to(capture):
-                yield client, templates
+            try:
+                from flaskext.genshi import template_generated
+            except ImportError:
+                pass
+            else:
+                @template_generated.connect_via(app)
+                def signal_genshi(sender, template, context):
+                    template_rendered.send(None, template=template.filename,
+                                       context=context)
+
+            with app_context(app) as client:
+                with template_rendered.connected_to(capture):
+                    yield client, templates
 
     return test_request_context
 
